@@ -5,29 +5,39 @@ import random
 # ------------------ Configuration ------------------
 st.set_page_config(page_title="Typing Speed Test", page_icon="⌨️", layout="centered")
 
-# Custom CSS for design
+# Custom CSS for both dark & light themes
 st.markdown("""
     <style>
+    :root {
+        --bg-color: #0f172a; /* Dark mode */
+        --text-color: #f8fafc;
+        --card-bg: #1e293b;
+    }
+    [data-theme="light"] {
+        --bg-color: #f8fafc; /* Light mode */
+        --text-color: #1e293b;
+        --card-bg: #ffffff;
+    }
     body {
-        background-color: #f8fafc;
-        color: #1e293b;
+        background-color: var(--bg-color);
+        color: var(--text-color);
         font-family: 'Poppins', sans-serif;
     }
-    .stTextArea textarea {
-        font-size: 16px !important;
-        line-height: 1.6;
-        border-radius: 10px !important;
-        border: 1px solid #94a3b8 !important;
-    }
     .passage-box {
-        background: #ffffff;
+        background: var(--card-bg);
+        color: var(--text-color);
         border-radius: 12px;
         padding: 20px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         margin-bottom: 20px;
     }
+    .stTextArea textarea {
+        font-size: 16px !important;
+        line-height: 1.6;
+        border-radius: 10px !important;
+    }
     .result-box {
-        background: #f1f5f9;
+        background: rgba(59,130,246,0.1);
         border-left: 5px solid #3b82f6;
         padding: 15px;
         border-radius: 8px;
@@ -62,12 +72,12 @@ st.write("Enhance your typing speed and accuracy with real-time evaluation. Sele
 # ------------------ Difficulty Selection ------------------
 level = st.radio("🎚️ Choose Difficulty Level:", ["Easy", "Medium", "Hard"], horizontal=True)
 
-# ------------------ Start Test Button ------------------
+# ------------------ Start Test ------------------
 if st.button("🚀 Start Test"):
     st.session_state['text'] = random.choice(passages[level])
     st.session_state['start_time'] = None
     st.session_state['typed'] = ""
-    st.session_state['test_started'] = True  # Mark that test has begun
+    st.session_state['test_started'] = True
 
 # ------------------ Show Passage ------------------
 if st.session_state.get('test_started', False):
@@ -77,11 +87,9 @@ if st.session_state.get('test_started', False):
 
         typed_text = st.text_area("💬 Start Typing Here:", st.session_state.get('typed', ""), height=150)
 
-        # Start timer when typing starts
         if typed_text and st.session_state.get('start_time') is None:
             st.session_state['start_time'] = time.time()
 
-        # Submit button
         if st.button("✅ Submit"):
             if not typed_text.strip():
                 st.warning("⚠️ Please type the passage before submitting.")
@@ -109,7 +117,4 @@ if st.session_state.get('test_started', False):
                 if st.button("🔁 Restart Test"):
                     st.session_state.clear()
                     st.experimental_rerun()
-    else:
-        st.warning("⚠️ Click 'Start Test' to begin.")
-else:
-    st.info("Select a difficulty and click **Start Test** to see your passage.")
+
