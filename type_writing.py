@@ -5,7 +5,7 @@ import random
 # ------------------ Configuration ------------------
 st.set_page_config(page_title="Typing Speed Test", page_icon="⌨️", layout="centered")
 
-# Custom CSS for better design
+# Custom CSS for design
 st.markdown("""
     <style>
     body {
@@ -36,7 +36,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ------------------ Data ------------------
+# ------------------ Passages ------------------
 passages = {
     "Easy": [
         "Python is a versatile programming language.",
@@ -55,54 +55,61 @@ passages = {
     ]
 }
 
-# ------------------ App Header ------------------
+# ------------------ Title ------------------
 st.title("⌨️ Professional Typing Speed Test")
 st.write("Enhance your typing speed and accuracy with real-time evaluation. Select your level and begin!")
 
-# ------------------ Level Selection ------------------
+# ------------------ Difficulty Selection ------------------
 level = st.radio("🎚️ Choose Difficulty Level:", ["Easy", "Medium", "Hard"], horizontal=True)
 
-# ------------------ Start Button ------------------
+# ------------------ Start Test Button ------------------
 if st.button("🚀 Start Test"):
     st.session_state['text'] = random.choice(passages[level])
     st.session_state['start_time'] = None
     st.session_state['typed'] = ""
+    st.session_state['test_started'] = True  # Mark that test has begun
 
-# ------------------ Main Test ------------------
-if 'text' in st.session_state:
-    st.markdown(f"<div class='passage-box'><b>Type the passage below:</b><br><br>{st.session_state['text']}</div>", unsafe_allow_html=True)
+# ------------------ Show Passage ------------------
+if st.session_state.get('test_started', False):
+    passage = st.session_state.get('text', "")
+    if passage:
+        st.markdown(f"<div class='passage-box'><b>Type the passage below:</b><br><br>{passage}</div>", unsafe_allow_html=True)
 
-    typed_text = st.text_area("💬 Start Typing Here:", st.session_state.get('typed', ""), height=150)
+        typed_text = st.text_area("💬 Start Typing Here:", st.session_state.get('typed', ""), height=150)
 
-    # Start timer
-    if typed_text and st.session_state.get('start_time') is None:
-        st.session_state['start_time'] = time.time()
+        # Start timer when typing starts
+        if typed_text and st.session_state.get('start_time') is None:
+            st.session_state['start_time'] = time.time()
 
-    # Submit Button
-    if st.button("✅ Submit"):
-        if not typed_text.strip():
-            st.warning("⚠️ Please type the passage before submitting.")
-        else:
-            end_time = time.time()
-            time_taken = round(end_time - st.session_state['start_time'], 2)
+        # Submit button
+        if st.button("✅ Submit"):
+            if not typed_text.strip():
+                st.warning("⚠️ Please type the passage before submitting.")
+            else:
+                end_time = time.time()
+                time_taken = round(end_time - st.session_state['start_time'], 2)
 
-            words = st.session_state['text'].split()
-            typed_words = typed_text.strip().split()
-            correct = sum(1 for i in range(min(len(words), len(typed_words))) if words[i] == typed_words[i])
-            accuracy = round((correct / len(words)) * 100, 2)
-            wpm = round((len(typed_words) / time_taken) * 60, 2)
+                words = passage.split()
+                typed_words = typed_text.strip().split()
+                correct = sum(1 for i in range(min(len(words), len(typed_words))) if words[i] == typed_words[i])
+                accuracy = round((correct / len(words)) * 100, 2)
+                wpm = round((len(typed_words) / time_taken) * 60, 2)
 
-            st.markdown("""
-                <div class='result-box'>
-                    <h4>📊 Test Results</h4>
-                </div>
-            """, unsafe_allow_html=True)
+                st.markdown("""
+                    <div class='result-box'>
+                        <h4>📊 Test Results</h4>
+                    </div>
+                """, unsafe_allow_html=True)
 
-            st.metric(label="⏱ Time Taken", value=f"{time_taken} sec")
-            st.metric(label="✅ Correct Words", value=f"{correct}/{len(words)}")
-            st.metric(label="🎯 Accuracy", value=f"{accuracy}%")
-            st.metric(label="⌨️ Typing Speed", value=f"{wpm} WPM")
+                st.metric(label="⏱ Time Taken", value=f"{time_taken} sec")
+                st.metric(label="✅ Correct Words", value=f"{correct}/{len(words)}")
+                st.metric(label="🎯 Accuracy", value=f"{accuracy}%")
+                st.metric(label="⌨️ Typing Speed", value=f"{wpm} WPM")
 
-# ------------------ Footer ------------------
-st.markdown("<hr>", unsafe_allow_html=True)
-st.caption("Developed with ❤️ using Streamlit | Perfect for Typing Practice & Skill Improvement")
+                if st.button("🔁 Restart Test"):
+                    st.session_state.clear()
+                    st.experimental_rerun()
+    else:
+        st.warning("⚠️ Click 'Start Test' to begin.")
+else:
+    st.info("Select a difficulty and click **Start Test** to see your passage.")
