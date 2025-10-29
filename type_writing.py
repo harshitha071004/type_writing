@@ -81,7 +81,7 @@ with reset_col:
     if st.button("🔁 Reset Session"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
-        st.rerun()  # ✅ replaced experimental_rerun()
+        st.rerun()
 
 # --------------------
 # START TEST
@@ -93,7 +93,7 @@ if start_clicked:
     st.session_state.typed = ""
     st.session_state.passage = user_passage.strip() if (custom_pass and user_passage) else random.choice(PASSAGES[level])
     st.session_state.time_left = 60 if mode.startswith("60s") else None
-    st.rerun()  # ✅ replaced experimental_rerun()
+    st.rerun()
 
 if not st.session_state.test_started:
     st.info("Click **Start Test** to begin.")
@@ -106,7 +106,10 @@ if not st.session_state.test_started:
 # TEST INTERFACE
 # --------------------
 st.subheader("Type the passage below:")
-st.markdown(f"<div style='background:#f8f9fa; padding:15px; border-radius:8px;'>{st.session_state.passage}</div>", unsafe_allow_html=True)
+st.markdown(
+    f"<div style='background-color:#000000; color:#FFFFFF; padding:15px; border-radius:8px; font-size:16px;'>{st.session_state.passage}</div>",
+    unsafe_allow_html=True
+)
 
 typed = st.text_area("Start typing here...", value=st.session_state.get("typed", ""), height=150, key="typing_area")
 
@@ -186,5 +189,4 @@ if submit or (st.session_state.get("time_left") == 0):
 
         if st.button("🔁 Try Again"):
             st.session_state.test_started = False
-            st.rerun()  # ✅ replaced experimental_rerun()
-
+            st.rerun()
