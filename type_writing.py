@@ -81,7 +81,7 @@ with reset_col:
     if st.button("🔁 Reset Session"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
-        st.experimental_rerun()
+        st.rerun()  # ✅ replaced experimental_rerun()
 
 # --------------------
 # START TEST
@@ -93,7 +93,7 @@ if start_clicked:
     st.session_state.typed = ""
     st.session_state.passage = user_passage.strip() if (custom_pass and user_passage) else random.choice(PASSAGES[level])
     st.session_state.time_left = 60 if mode.startswith("60s") else None
-    st.experimental_rerun()
+    st.rerun()  # ✅ replaced experimental_rerun()
 
 if not st.session_state.test_started:
     st.info("Click **Start Test** to begin.")
@@ -186,4 +186,5 @@ if submit or (st.session_state.get("time_left") == 0):
 
         if st.button("🔁 Try Again"):
             st.session_state.test_started = False
-            st.experimental_rerun()
+            st.rerun()  # ✅ replaced experimental_rerun()
+
